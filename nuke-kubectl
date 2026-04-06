@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${RED}--- Starting Complete Kubectl Removal ---${NC}"
+
+# 1. Remove the Binary
+if [ -f "/usr/local/bin/kubectl" ]; then
+    echo -e "${BLUE}Removing kubectl binary from /usr/local/bin...${NC}"
+    sudo rm -f /usr/local/bin/kubectl
+else
+    echo -e "${GREEN}Kubectl binary not found in /usr/local/bin. Skipping.${NC}"
+fi
+
+# 2. Remove Configuration and Cache
+# WARNING: This deletes all cluster contexts, including Kind, MicroK8s, and Cloud clusters.
+if [ -d "$HOME/.kube" ]; then
+    echo -e "${BLUE}Deleting ~/.kube directory (configs and cache)...${NC}"
+    rm -rf "$HOME/.kube"
+else
+    echo -e "${GREEN}No ~/.kube directory found.${NC}"
+fi
+
+# 3. Clean up Shell Completions
+echo -e "${BLUE}Cleaning up shell completions in .bashrc...${NC}"
+if [ -f "$HOME/.bashrc" ]; then
+    # Removes the line: source <(kubectl completion bash)
+    sed -i '/kubectl completion bash/d' "$HOME/.bashrc"
+    # Removes any common aliases you might have added manually
+    sed -i '/alias k=kubectl/d' "$HOME/.bashrc"
+fi
+
+# 4. Final Verification
+echo -e "${BLUE}Verifying removal...${NC}"
+if ! command -v kubectl &> /dev/null; then
+    echo -e "${GREEN}✓ kubectl has been completely removed.${NC}"
+else
+    echo -e "${RED}✗ kubectl is still detectable at $(which kubectl).${NC}"
+    echo "Check if it was installed via snap (snap list) or apt (dpkg -l | grep kube)."
+fi
+
+echo -e "${GREEN}Nuke process complete.${NC}"
+echo "Note: Restart your terminal or run 'exec bash' to refresh the environment."
