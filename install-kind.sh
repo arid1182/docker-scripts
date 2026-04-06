@@ -1,25 +1,5 @@
 #!/bin/bash
-# --- 1.5 Install Kubectl Binary ---
-K8S_VERSION="v1.35.0"
 
-if ! command -v kubectl &> /dev/null; then
-    echo "Installing kubectl ${K8S_VERSION}..."
-    # Download the stable version of kubectl
-    curl -LO "https://dl.k8s.io/release/${K8S_VERSION}/bin/linux/${ARCH}/kubectl"
-    
-    # Optional: Download the checksum for production security
-    curl -LO "https://dl.k8s.io/${K8S_VERSION}/bin/linux/${ARCH}/kubectl.sha256"
-    echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
-    
-    chmod +x ./kubectl
-    sudo mv ./kubectl /usr/local/bin/kubectl
-    rm kubectl.sha256
-else
-    echo "Kubectl is already installed: $(kubectl version --client -o json | jq -r '.clientVersion.gitVersion')"
-fi
-
-
-# Kind Instllation Begin here !
 set -e
 
 # --- Configuration ---
