@@ -23,7 +23,7 @@ fi
 # Check if cluster already exists to prevent errors in re-runnable pipelines
 if ! kind get clusters | grep -q "^ci-cluster$"; then
     echo "Creating CI/CD cluster with K8s ${K8S_VERSION}..."
-    kind create cluster --name ci-cluster --image "$NODE_IMAGE" --wait 5m
+    kind create cluster --name api-gateway --image "$NODE_IMAGE" --wait 5m
 else
     echo "Cluster 'ci-cluster' already exists. Skipping creation."
 fi
